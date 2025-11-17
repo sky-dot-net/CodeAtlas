@@ -2,7 +2,7 @@
   "name": "codeatlas",
   "displayName": "CodeAtlas",
   "description": "Interactive hierarchical LOC treemap visualization",
-  "version": "0.0.38",
+  "version": "0.0.41",
   "publisher": "SpinSolutions",
   "icon": "icon.png",
   "repository": {
