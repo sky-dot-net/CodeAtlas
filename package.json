@@ -1,9 +1,21 @@
 {
-  "name": "loc-treemap",
+  "name": "codeatlas",
   "displayName": "CodeAtlas",
   "description": "Interactive hierarchical LOC treemap visualization",
   "version": "0.0.38",
-  "publisher": "local",
+  "publisher": "skydotnet",
+  "icon": "icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sky-dot-net/CodeAtlas"
+  },
+  "bugs": {
+    "url": "https://github.com/sky-dot-net/CodeAtlas/issues"
+  },
+  "homepage": "https://github.com/sky-dot-net/CodeAtlas#readme",
+  "author": {
+    "name": "skydotnet"
+  },
   "engines": {
     "vscode": "^1.85.0"
   },
@@ -14,6 +26,7 @@
   "main": "./extension.js",
   "files": [
     "extension.js",
+    "icon.png",
     "discover-languages.ps1",
     "loc-treemap-drilldown.ps1",
     "treemap.template.html",
