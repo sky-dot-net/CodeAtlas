@@ -4,7 +4,7 @@
 
 Explore your codebase visually with an interactive drill-down treemap that reveals the structure, size, and complexity of your project at a glance.
 
-![CodeAtlas Overview](screenshots/overview.png)
+![CodeAtlas Overview](https://raw.githubusercontent.com/sky-dot-net/CodeAtlas/main/screenshots/overview.png)
 
 ## Why CodeAtlas?
 
@@ -26,7 +26,7 @@ Click any rectangle to zoom into that folder, file, or code block. Use breadcrum
 ### 🌡️ Size-Based Color Coding
 Heat gradient from **red (largest)** → **orange** → **yellow** → **green** → **blue (smallest)** makes hotspots obvious.
 
-![Color Gradient](screenshots/colors.png)
+![Color Gradient](https://raw.githubusercontent.com/sky-dot-net/CodeAtlas/main/screenshots/colors.png)
 
 ### 🎯 Direct Code Navigation
 **Ctrl+Click** any file or code block to jump directly to that location in your editor - with exact line numbers.
@@ -36,7 +36,7 @@ Heat gradient from **red (largest)** → **orange** → **yellow** → **green**
 - **File level**: Identify large files within folders
 - **Code block level**: Drill into functions, classes, methods with exact LOC and line numbers
 
-![Hierarchy Levels](screenshots/hierarchy.png)
+![Hierarchy Levels](https://raw.githubusercontent.com/sky-dot-net/CodeAtlas/main/screenshots/hierarchy.png)
 
 ### 🔤 Multi-Language Support
 Built-in support for:
@@ -140,12 +140,6 @@ Your parsers are automatically discovered and integrated.
 
 ### Drill-Down - File Level
 ![File View](screenshots/file-view.png)
-
-### Deep Dive - Code Block Level
-![Block View](screenshots/block-view.png)
-
-### Dark Theme Compatible
-![Dark Theme](screenshots/dark-theme.png)
 
 ## Use Cases
 

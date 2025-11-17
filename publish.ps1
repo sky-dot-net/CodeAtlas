@@ -38,7 +38,7 @@ try {
     
     # Package
     Write-Host "Packaging extension..." -ForegroundColor Yellow
-    vsce package --allow-missing-repository 2>&1 | Out-Null
+    vsce package --allow-missing-repository --baseContentUrl "https://raw.githubusercontent.com/PLACEHOLDER/CodeAtlas/main/" --baseImagesUrl "https://raw.githubusercontent.com/PLACEHOLDER/CodeAtlas/main/" --skip-license 2>&1 | Out-Null
     
     if ($LASTEXITCODE -ne 0) {
         throw "Packaging failed"

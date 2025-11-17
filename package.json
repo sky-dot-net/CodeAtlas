@@ -1,8 +1,8 @@
 {
   "name": "loc-treemap",
-  "displayName": "LOC Treemap Visualizer",
-  "description": "Interactive drill-down LOC treemap for PowerShell projects",
-  "version": "0.0.35",
+  "displayName": "CodeAtlas",
+  "description": "Interactive hierarchical LOC treemap visualization",
+  "version": "0.0.38",
   "publisher": "local",
   "engines": {
     "vscode": "^1.85.0"
