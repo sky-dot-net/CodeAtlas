@@ -305,8 +305,8 @@ Location: `~/.vscode/extensions/local.codeatlas-*/LanguageParsers/`
 
 ## Need Help?
 
-- [Open an issue](../../issues) with your parser code
-- [Discussion forum](../../discussions) for questions
+- Open an issue on GitHub with your parser code
+- Check discussion forum for questions
 - Check existing parsers for patterns
 
 ---

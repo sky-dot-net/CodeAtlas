@@ -58,7 +58,7 @@ Built-in support for:
 ## Installation
 
 ### From VSIX (Local)
-1. Download the latest `.vsix` from [Releases](../../releases)
+1. Download the latest `.vsix` from releases
 2. Open VS Code → Extensions (`Ctrl+Shift+X`)
 3. Click `...` menu → `Install from VSIX`
 4. Select the downloaded file
@@ -196,8 +196,8 @@ Scanning happens once per command invocation. Results are cached until next run.
 
 Contributions welcome! 
 
-- **Bug reports**: [Open an issue](../../issues)
-- **Feature requests**: [Discussion board](../../discussions)
+- **Bug reports**: Open an issue on GitHub
+- **Feature requests**: Start a discussion
 - **Language parsers**: Submit a PR with your parser in `LanguageParsers/`
 - **Documentation**: Improvements always appreciated
 
@@ -225,5 +225,3 @@ Inspired by tools like WinDirStat and Gource that make data structure tangible.
 ---
 
 **Made with 🗺️ by the QualityAssurance team**
-
-[Report Issue](../../issues) · [Request Feature](../../discussions) · [Documentation](../../wiki)
