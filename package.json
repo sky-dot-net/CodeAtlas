@@ -1,0 +1,93 @@
+{
+  "name": "loc-treemap",
+  "displayName": "LOC Treemap Visualizer",
+  "description": "Interactive drill-down LOC treemap for PowerShell projects",
+  "version": "0.0.35",
+  "publisher": "local",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Visualization"
+  ],
+  "activationEvents": [],
+  "main": "./extension.js",
+  "files": [
+    "extension.js",
+    "discover-languages.ps1",
+    "loc-treemap-drilldown.ps1",
+    "treemap.template.html",
+    "TreeBuilder.ps1",
+    "TreemapRenderer.ps1",
+    "LanguageParsers/**/*.ps1"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "loc-treemap.show",
+        "title": "Show LOC Treemap",
+        "category": "LOC"
+      }
+    ],
+    "configuration": {
+      "title": "LOC Treemap",
+      "properties": {
+        "locTreemap.languages.autohotkey": {
+          "description": "Include AutoHotkey files (.ahk, .ahk2)",
+          "type": "boolean",
+          "default": false
+        },
+        "locTreemap.languages.csharp": {
+          "description": "Include CSharp files (.cs)",
+          "type": "boolean",
+          "default": true
+        },
+        "locTreemap.languages.powershell": {
+          "description": "Include PowerShell files (.psm1, .ps1)",
+          "type": "boolean",
+          "default": true
+        },
+        "locTreemap.scanEntireRepo": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Scan entire repository regardless of git tracking. **Default:** Auto-discover git-tracked files only. Enable this to scan all files in the workspace."
+        },
+        "locTreemap.ignoreDotFolders": {
+          "type": "boolean",
+          "default": true,
+          "description": "Ignore folders starting with a dot (e.g., .git, .vscode, .ai-supervisor)"
+        },
+        "locTreemap.colors.color1": {
+          "type": "string",
+          "default": "#d73a49",
+          "description": "Color 1 (Hottest - Largest LOC)"
+        },
+        "locTreemap.colors.color2": {
+          "type": "string",
+          "default": "#ff8c00",
+          "description": "Color 2"
+        },
+        "locTreemap.colors.color3": {
+          "type": "string",
+          "default": "#ffd700",
+          "description": "Color 3"
+        },
+        "locTreemap.colors.color4": {
+          "type": "string",
+          "default": "#32cd32",
+          "description": "Color 4"
+        },
+        "locTreemap.colors.color5": {
+          "type": "string",
+          "default": "#4169e1",
+          "description": "Color 5"
+        },
+        "locTreemap.colors.color6": {
+          "type": "string",
+          "default": "#00008b",
+          "description": "Color 6 (Coldest - Smallest LOC)"
+        }
+      }
+    }
+  }
+}

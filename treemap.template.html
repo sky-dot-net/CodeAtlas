@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Interactive LOC Treemap</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #1e1e1e;
+            color: #fff;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        #breadcrumb {
+            margin: 10px 0;
+            padding: 10px;
+            background: #2d2d2d;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        #breadcrumb span {
+            cursor: pointer;
+            padding: 5px 10px;
+            margin-right: 5px;
+            background: #3d3d3d;
+            border-radius: 3px;
+        }
+
+        #breadcrumb span:hover {
+            background: #4d4d4d;
+        }
+
+        #legend {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .legend-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+        }
+
+        .legend-hint {
+            color: #999;
+            font-size: 12px;
+            font-style: italic;
+            margin-bottom: 15px;
+        }
+
+        #treemap {
+            width: 100%;
+            height: calc(100vh - 220px);
+            min-height: 500px;
+            background: #252525;
+            border-radius: 5px;
+        }
+
+        .node {
+            stroke: #1e1e1e;
+            stroke-width: 2px;
+            cursor: pointer;
+        }
+
+        .node:hover {
+            opacity: 0.8;
+        }
+
+        .label {
+            fill: #fff;
+            font-size: 12px;
+            pointer-events: none;
+            text-shadow: 0 0 3px #000;
+        }
+
+        .tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.9);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            pointer-events: none;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Interactive LOC Treemap - Click to Drill Down</h1>
+    <div id="legend"></div>
+    <div class="legend-hint">Ctrl+Click to navigate to the element/code</div>
+    <div id="breadcrumb"></div>
+    <svg id="treemap"></svg>
+    <div class="tooltip" style="display: none;"></div>
+
+    <script>
+        const vscode = acquireVsCodeApi();
+        const data = {{ DATA_JSON }};
+        const colorPalette = [{{ COLOR_PALETTE }}];
+        let currentNode = data;
+        let breadcrumb = [{ label: 'Root', node: data }];
+
+        const tooltip = d3.select('.tooltip');
+
+        function getColor(value, sortedValues) {
+            if (sortedValues.length === 1) return colorPalette[0];
+            const position = sortedValues.indexOf(value);
+            const ratio = position / (sortedValues.length - 1);
+            const index = Math.floor(ratio * (colorPalette.length - 1));
+            return colorPalette[index];
+        }
+
+        function calculateLOC(node) {
+            if (node.isFile) return node.loc || 0;
+            if (!node.children) return 0;
+
+            let total = 0;
+            for (const key in node.children) {
+                total += calculateLOC(node.children[key]);
+            }
+            return total;
+        }
+
+        function getChildren(node) {
+            if (node.isFile && node.blocks) {
+                return node.blocks.map(b => ({
+                    name: b.Name,
+                    value: b.LOC,
+                    line: b.Line || 1,
+                    isBlock: true
+                }));
+            }
+            else if (node.children) {
+                const children = [];
+                for (const key in node.children) {
+                    const child = node.children[key];
+                    children.push({
+                        name: child.name,
+                        value: calculateLOC(child),
+                        node: child
+                    });
+                }
+                return children;
+            }
+            return [];
+        }
+
+        function formatLOC(value) {
+            if (value >= 1000) {
+                return (value / 1000).toFixed(1) + 'K';
+            }
+            return value.toString();
+        }
+
+        function updateLegend(items) {
+            const legend = d3.select('#legend');
+            legend.html('');
+
+            if (items.length === 0) return;
+
+            const sortedItems = items.slice().sort((a, b) => b.value - a.value);
+            const sortedValues = sortedItems.map(i => i.value);
+
+            const min = Math.min(...sortedValues);
+            const max = Math.max(...sortedValues);
+
+            // Don't show legend if 6 or fewer items (colors are self-explanatory)
+            if (items.length <= 6) return;
+
+            if (min === max) {
+                const color = getColor(max, sortedValues);
+                const legendItem = legend.append('div').attr('class', 'legend-item');
+                legendItem.append('div')
+                    .attr('class', 'legend-box')
+                    .style('background', color);
+                legendItem.append('span')
+                    .text(`${formatLOC(max)} LOC`);
+            } else {
+                // Get unique colors actually used in the visualization
+                const usedColors = new Map();
+                sortedItems.forEach(item => {
+                    const color = getColor(item.value, sortedValues);
+                    if (!usedColors.has(color)) {
+                        usedColors.set(color, []);
+                    }
+                    usedColors.get(color).push(item.value);
+                });
+
+                // Create legend entries for each used color
+                const colorEntries = Array.from(usedColors.entries()).map(([color, values]) => ({
+                    color: color,
+                    min: Math.min(...values),
+                    max: Math.max(...values)
+                })).sort((a, b) => b.max - a.max);
+
+                colorEntries.forEach(entry => {
+                    const legendItem = legend.append('div').attr('class', 'legend-item');
+                    legendItem.append('div')
+                        .attr('class', 'legend-box')
+                        .style('background', entry.color);
+
+                    // If min equals max, show single value, otherwise show range
+                    if (entry.min === entry.max) {
+                        legendItem.append('span')
+                            .text(`${formatLOC(entry.min)} LOC`);
+                    } else {
+                        legendItem.append('span')
+                            .text(`${formatLOC(entry.min)}-${formatLOC(entry.max)} LOC`);
+                    }
+                });
+            }
+        } function updateBreadcrumb() {
+            const breadcrumbDiv = d3.select('#breadcrumb');
+            breadcrumbDiv.html('');
+
+            breadcrumb.forEach((item, index) => {
+                breadcrumbDiv.append('span')
+                    .text(item.label)
+                    .on('click', () => {
+                        breadcrumb = breadcrumb.slice(0, index + 1);
+                        currentNode = item.node;
+                        render();
+                    });
+                if (index < breadcrumb.length - 1) {
+                    breadcrumbDiv.append('span').text(' > ').style('background', 'none').style('cursor', 'default');
+                }
+            });
+        }
+
+        function render() {
+            const width = document.getElementById('treemap').clientWidth;
+            const height = document.getElementById('treemap').clientHeight;
+
+            const items = getChildren(currentNode);
+            const sortedValues = items.map(i => i.value).sort((a, b) => b - a);
+
+            updateLegend(items);
+            updateBreadcrumb();
+
+            const svg = d3.select('#treemap')
+                .attr('width', width)
+                .attr('height', height);
+
+            svg.selectAll('*').remove();
+
+            if (items.length === 0) {
+                svg.append('text')
+                    .attr('x', width / 2)
+                    .attr('y', height / 2)
+                    .attr('text-anchor', 'middle')
+                    .attr('class', 'label')
+                    .text('No data');
+                return;
+            }
+
+            const root = d3.hierarchy({ children: items }, d => d.children)
+                .sum(d => d.value || 0);
+
+            d3.treemap()
+                .size([width, height])
+                .padding(2)
+                (root);
+
+            const cells = svg.selectAll('g')
+                .data(root.leaves())
+                .join('g')
+                .attr('transform', d => `translate(${d.x0},${d.y0})`);
+
+            cells.append('rect')
+                .attr('class', 'node')
+                .attr('width', d => d.x1 - d.x0)
+                .attr('height', d => d.y1 - d.y0)
+                .attr('fill', d => getColor(d.data.value, sortedValues))
+                .on('mouseover', (event, d) => {
+                    tooltip.style('display', 'block')
+                        .html(`<strong>${d.data.name}</strong><br/>${d.data.value} LOC`);
+                })
+                .on('mousemove', (event) => {
+                    tooltip.style('left', (event.pageX + 10) + 'px')
+                        .style('top', (event.pageY - 10) + 'px');
+                })
+                .on('mouseout', () => {
+                    tooltip.style('display', 'none');
+                })
+                .on('click', (event, d) => {
+                    if (event.ctrlKey || event.metaKey) {
+                        // Ctrl+Click: Navigate to file/location
+                        if (d.data.isBlock) {
+                            // Code block - open file at line
+                            const path = currentNode.path;
+                            const line = d.data.line || 1;
+                            if (path) {
+                                vscode.postMessage({
+                                    command: 'openFile',
+                                    path: path,
+                                    line: line
+                                });
+                            }
+                        } else if (d.data.node && d.data.node.isFile) {
+                            // File - open it
+                            const path = d.data.node.path;
+                            if (path) {
+                                vscode.postMessage({
+                                    command: 'openFile',
+                                    path: path
+                                });
+                            }
+                        } else if (d.data.node && d.data.node.path) {
+                            // Folder - navigate in file explorer
+                            vscode.postMessage({
+                                command: 'revealInExplorer',
+                                path: d.data.node.path
+                            });
+                        }
+                        event.stopPropagation();
+                        return;
+                    }
+
+                    // Regular click: drill down
+                    if (d.data.isBlock) return;
+                    if (d.data.node) {
+                        breadcrumb.push({ label: d.data.name, node: d.data.node });
+                        currentNode = d.data.node;
+                        render();
+                    }
+                });
+
+            cells.append('text')
+                .attr('class', 'label')
+                .attr('x', 4)
+                .attr('y', 16)
+                .text(d => {
+                    const width = d.x1 - d.x0;
+                    const height = d.y1 - d.y0;
+                    if (width < 50 || height < 30) return '';
+                    return d.data.name;
+                })
+                .each(function (d) {
+                    const width = d.x1 - d.x0;
+                    const textLength = this.getComputedTextLength();
+                    if (textLength > width - 8) {
+                        const text = d.data.name;
+                        const avgCharWidth = textLength / text.length;
+                        const maxChars = Math.floor((width - 12) / avgCharWidth);
+                        if (maxChars > 3) {
+                            d3.select(this).text(text.substring(0, maxChars) + '...');
+                        } else {
+                            d3.select(this).text('');
+                        }
+                    }
+                });
+
+            cells.append('text')
+                .attr('class', 'label')
+                .attr('x', 4)
+                .attr('y', 32)
+                .text(d => {
+                    const width = d.x1 - d.x0;
+                    const height = d.y1 - d.y0;
+                    if (width < 50 || height < 45) return '';
+                    return `${d.data.value} LOC`;
+                });
+        }
+
+        render();
+
+        // Re-render on window resize
+        window.addEventListener('resize', () => {
+            render();
+        });
+    </script>
+</body>
+
+</html>
