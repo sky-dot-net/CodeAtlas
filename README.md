@@ -23,8 +23,6 @@ Traditional file explorers show structure but hide size. Line counters show size
 ### 🗺️ Hierarchical Drill-Down Navigation
 Click any rectangle to zoom into that folder, file, or code block. Use breadcrumbs to navigate back up.
 
-![Navigation Demo](screenshots/navigation.gif)
-
 ### 🌡️ Size-Based Color Coding
 Heat gradient from **red (largest)** → **orange** → **yellow** → **green** → **blue (smallest)** makes hotspots obvious.
 
@@ -32,8 +30,6 @@ Heat gradient from **red (largest)** → **orange** → **yellow** → **green**
 
 ### 🎯 Direct Code Navigation
 **Ctrl+Click** any file or code block to jump directly to that location in your editor - with exact line numbers.
-
-![Click to Navigate](screenshots/click-to-code.gif)
 
 ### 📊 Multiple Hierarchy Levels
 - **Folder level**: See which directories dominate your codebase
