@@ -1,8 +1,8 @@
 {
-  "name": "codeatlas",
+  "name": "code-atlas",
   "displayName": "CodeAtlas",
   "description": "Interactive hierarchical LOC treemap visualization",
-  "version": "0.0.41",
+  "version": "0.0.42",
   "publisher": "SpinSolutions",
   "icon": "icon.png",
   "repository": {
