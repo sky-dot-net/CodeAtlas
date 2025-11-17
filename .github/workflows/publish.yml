@@ -22,9 +22,9 @@ jobs:
         run: npm install -g @vscode/vsce
 
       - name: Package extension
-        run: vsce package --no-yarn
+        run: echo "y" | vsce package --no-yarn --allow-missing-repository --baseContentUrl https://github.com/sky-dot-net/CodeAtlas/raw/main/ --baseImagesUrl https://github.com/sky-dot-net/CodeAtlas/raw/main/
 
       - name: Publish to marketplace
-        run: vsce publish --no-yarn -p ${{ secrets.VSCE_TOKEN }}
+        run: echo "y" | vsce publish --no-yarn -p ${{ secrets.VSCE_TOKEN }} --allow-missing-repository --baseContentUrl https://github.com/sky-dot-net/CodeAtlas/raw/main/ --baseImagesUrl https://github.com/sky-dot-net/CodeAtlas/raw/main/
         env:
           VSCE_TOKEN: ${{ secrets.VSCE_TOKEN }}
