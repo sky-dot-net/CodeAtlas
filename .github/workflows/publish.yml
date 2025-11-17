@@ -21,10 +21,19 @@ jobs:
       - name: Install vsce
         run: npm install -g @vscode/vsce
 
+      - name: Bump version
+        run: |
+          npm version patch --no-git-tag-version
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add package.json
+          git commit -m "chore: Bump version [skip ci]"
+          git push
+
       - name: Package extension
-        run: echo "y" | vsce package --no-yarn --allow-missing-repository --baseContentUrl https://github.com/sky-dot-net/CodeAtlas/raw/main/ --baseImagesUrl https://github.com/sky-dot-net/CodeAtlas/raw/main/
+        run: vsce package --no-yarn
 
       - name: Publish to marketplace
-        run: echo "y" | vsce publish --no-yarn -p ${{ secrets.VSCE_TOKEN }} --allow-missing-repository --baseContentUrl https://github.com/sky-dot-net/CodeAtlas/raw/main/ --baseImagesUrl https://github.com/sky-dot-net/CodeAtlas/raw/main/
+        run: vsce publish --no-yarn -p ${{ secrets.VSCE_TOKEN }}
         env:
           VSCE_TOKEN: ${{ secrets.VSCE_TOKEN }}
