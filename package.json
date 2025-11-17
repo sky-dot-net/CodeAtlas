@@ -3,7 +3,7 @@
   "displayName": "CodeAtlas",
   "description": "Interactive hierarchical LOC treemap visualization",
   "version": "0.0.38",
-  "publisher": "skydotnet",
+  "publisher": "SpinSolutions",
   "icon": "icon.png",
   "repository": {
     "type": "git",
@@ -14,7 +14,7 @@
   },
   "homepage": "https://github.com/sky-dot-net/CodeAtlas#readme",
   "author": {
-    "name": "skydotnet"
+    "name": "SpinSolutions"
   },
   "engines": {
     "vscode": "^1.85.0"
